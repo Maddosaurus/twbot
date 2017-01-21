@@ -1,5 +1,5 @@
 from sopel import module
-import datetime
+from datetime import datetime, timedelta
 
 @module.rule('(\w*) just subscribed with Twitch Prime!')
 def prime(bot, trigger):
@@ -19,7 +19,6 @@ def twstats(bot, trigger):
         bot.say('Sorry. I am only answering my admins this question.')
         return
     channel = trigger.group(2)
-    bot.say('Hey there! Now the subcounter for the channel: ' + channel)
     bot.say('Subcounter for ' + channel + ": " + str(len(bot.memory[channel].keys())))
     bot.say('Subs: ' + ", ".join(bot.memory[channel].keys()))
 
@@ -30,9 +29,13 @@ def twdetail(bot, trigger):
         return
     channel = trigger.group(2)
     bot.say('Preparing detailed stats for the channel: ' + channel)
-    bot.say('Legend: [P] is an Amazon Prime Sub, [$] a paid sub')
+    bot.say('Legend: [P] is an Amazon Prime Sub, [$] a paid sub - WARN: Sub Hours are note calculated correctly ATM!')
+    bot.say('______________________________________________')
     for key, values in bot.memory[channel].items():
-        bot.say('[' + values['type'] + ']' + key +', Subbed: ' + values['date'].strftime("%Y-%m-%d"))
+        bot.say('[' + values['type'] + ']' + key +', Subbed: ' + values['date'].strftime("%Y-%m-%d : %H:%M:%S") + 'Has been subbed for '+ str((datetime.now() - values['date']).days) + ' days and ' + str((datetime.now() - values['date']).seconds/3600) + ' hours')
+    bot.say('______________________________________________')
+    bot.say('For the completionzz: Output of twstats')
+    twstats(bot, trigger)
 
 # Helpers
 
